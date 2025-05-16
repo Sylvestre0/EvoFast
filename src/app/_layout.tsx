@@ -11,14 +11,9 @@ if (!loaded) return null;
 
 return (
     <ThemeProvider value={DefaultTheme}>
-        <Stack>
-            <Stack.Screen 
-            name="index"
-            options={{ headerShown: false }}
-            />
-        </Stack>
+        <Stack screenOptions={{ headerShown: false }} />
         <StatusBar style="auto" />  
     </ThemeProvider>
 );
 }
-    
+

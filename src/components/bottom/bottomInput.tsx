@@ -1,8 +1,8 @@
-import { TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 
 export const Personbottom = styled(TouchableOpacity).attrs((props) => ({
-  onPress: props.onPress || (() => console.log('Clicado!'))
+  onPress: props.onPress || (() => console.log('Clicado!')),
 }))`
   padding: 12px;
   background-color: ${props => props.bgColor || '#002764'};
@@ -10,13 +10,10 @@ export const Personbottom = styled(TouchableOpacity).attrs((props) => ({
   align-items: center;
   justify-content: center;
   height: 83px;
-  width: 336;
+  width: 336px;
 `;
 
-export default function bottom() {
-    return (
-        <Personbottom>
-            <Text>teste</Text>
-        </Personbottom>
-)};
-
+export const Login = styled(Text)`
+  font-size: 20px;
+  color: #fff;
+`;
