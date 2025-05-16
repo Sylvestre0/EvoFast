@@ -7,6 +7,7 @@ import Email from "@/components/Inputs/Email";
 import { Login, Personbottom } from "@/components/bottom/bottomInput";
 import { WaterMask } from "@/components/Marca_D'agua/cooporation";
 import { router } from 'expo-router';
+import { Text } from 'react-native';
 
 // Estilo do container com gradiente
 const Container = styled(LinearGradient).attrs({
@@ -22,7 +23,7 @@ const Container = styled(LinearGradient).attrs({
 
 // Botão de registrar-se
 const RegisterButton = styled.TouchableOpacity`
-  background-color: #ffffff33;
+  background-color:rgba(23, 212, 6, 0.81);
   padding: 12px 24px;
   border-radius: 10px;
   margin-top: 16px;
@@ -36,7 +37,8 @@ const RegisterText = styled.Text`
 
 // Link "Esqueceu sua senha?"
 const ForgotPassword = styled.TouchableOpacity`
-  margin-top: 10px;
+  margin-top: -20px;
+  margin-bottom: 10px;
 `;
 
 const ForgotText = styled.Text`
@@ -52,18 +54,20 @@ export default function LoginScreen() {
       <Logo />
       <Email />
       <Password />
-      <Personbottom onPress={() => router.navigate('/router/home')} >
-        <Login>Login</Login>
-      </Personbottom>
-      {/* Botão que leva para a tela de registro */}
-      <RegisterButton onPress={() => router.navigate('/router/register')}>
-        <RegisterText>Registrar-se</RegisterText>
-      </RegisterButton>
-
-      {/* Link para recuperação de senha */}
       <ForgotPassword onPress={() => router.navigate('/router/forgot-password')}>
         <ForgotText>Esqueceu sua senha?</ForgotText>
       </ForgotPassword>
+      <Personbottom onPress={() => router.navigate('/router/home')} >
+        <Login>Login</Login>
+      </Personbottom>
+      <Text> ou </Text>
+      {/* Botão que leva para a tela de registro */}
+      <RegisterButton onPress={() => router.navigate('/router/register')}>
+        <RegisterText>Registre-se</RegisterText>
+      </RegisterButton>
+
+      {/* Link para recuperação de senha */}
+      
 
       <WaterMask>©Sylvester Coop</WaterMask>
     </Container>

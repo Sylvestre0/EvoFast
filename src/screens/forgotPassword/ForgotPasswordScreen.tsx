@@ -1,27 +1,141 @@
-// screens/ForgotPasswordScreen.tsx
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ForgotPasswordScreen() {
+export default function PasswordRecoveryScreen() {
   const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const validateEmail = (email: string) => {
+    const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    return regex.test(email.toLowerCase());
+  };
+
+  const handleSendRecovery = () => {
+    if (!email.trim()) {
+      Alert.alert('Erro', 'Por favor, insira seu e-mail.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      Alert.alert('Erro', 'Por favor, insira um e-mail válido.');
+      return;
+    }
+
+    setLoading(true);
+    // Simular requisição API
+    setTimeout(() => {
+      setLoading(false);
+      Alert.alert(
+        'Sucesso',
+        'Um link para recuperação de senha foi enviado para seu e-mail.',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
+    }, 2000);
+  };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.select({ ios: 'padding', android: undefined })}
+    >
       <Text style={styles.title}>Recuperar Senha</Text>
 
-      {/* Seu formulário de recuperação aqui */}
+      <Text style={styles.instructions}>
+        Insira seu e-mail para receber o link de recuperação de senha.
+      </Text>
 
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.button}>
-        <Text style={styles.buttonText}>Voltar</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Seu e-mail"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={email}
+        onChangeText={setEmail}
+        editable={!loading}
+      />
+
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleSendRecovery}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? 'Enviando...' : 'Enviar'}
+        </Text>
       </TouchableOpacity>
-    </View>
+
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+        disabled={loading}
+      >
+        <Text style={styles.backButtonText}>Voltar ao Login</Text>
+      </TouchableOpacity>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 22, fontWeight: 'bold' },
-  button: { marginTop: 20, backgroundColor: '#ccc', padding: 10, borderRadius: 5 },
-  buttonText: { color: '#000' },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#002764',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  instructions: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#bbb',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    marginBottom: 24,
+  },
+  button: {
+    backgroundColor: '#00C851',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  buttonDisabled: {
+    backgroundColor: '#a5d6a7',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  backButton: {
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#002764',
+    fontWeight: '600',
+    fontSize: 16,
+  },
 });

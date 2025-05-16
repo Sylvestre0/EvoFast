@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CadastroUsuarioScreen = () => {
+  const navigation = useNavigation();
+
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
   const [usuario, setUsuario] = useState('');
@@ -10,10 +21,8 @@ const CadastroUsuarioScreen = () => {
   const [senha, setSenha] = useState('');
 
   const handleCadastro = () => {
-    // Aqui você pode adicionar a lógica para enviar os dados do usuário para o seu backend
     if (nome && cpf && usuario && endereco && email && senha) {
       Alert.alert('Sucesso!', 'Cadastro realizado com sucesso!');
-      // Limpar os campos após o cadastro (opcional)
       setNome('');
       setCpf('');
       setUsuario('');
@@ -27,9 +36,18 @@ const CadastroUsuarioScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Botão de voltar */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={28} color="#002764" />
+      </TouchableOpacity>
+
       <View style={styles.header}>
         <Text style={styles.title}>Cadastro de Usuário</Text>
       </View>
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Nome:</Text>
         <TextInput
@@ -39,6 +57,7 @@ const CadastroUsuarioScreen = () => {
           placeholder="Seu nome completo"
         />
       </View>
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>CPF:</Text>
         <TextInput
@@ -46,9 +65,10 @@ const CadastroUsuarioScreen = () => {
           value={cpf}
           onChangeText={setCpf}
           placeholder="Seu CPF"
-          keyboardType="numeric" 
+          keyboardType="numeric"
         />
       </View>
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Usuário:</Text>
         <TextInput
@@ -58,6 +78,7 @@ const CadastroUsuarioScreen = () => {
           placeholder="Seu nome de usuário"
         />
       </View>
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Endereço:</Text>
         <TextInput
@@ -67,6 +88,7 @@ const CadastroUsuarioScreen = () => {
           placeholder="Seu endereço"
         />
       </View>
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>E-mail:</Text>
         <TextInput
@@ -74,9 +96,10 @@ const CadastroUsuarioScreen = () => {
           value={email}
           onChangeText={setEmail}
           placeholder="Seu e-mail"
-          keyboardType="email-address" 
+          keyboardType="email-address"
         />
       </View>
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Senha:</Text>
         <TextInput
@@ -84,9 +107,10 @@ const CadastroUsuarioScreen = () => {
           value={senha}
           onChangeText={setSenha}
           placeholder="Sua senha"
-          secureTextEntry 
+          secureTextEntry
         />
       </View>
+
       <TouchableOpacity style={styles.button} onPress={handleCadastro}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
@@ -97,45 +121,55 @@ const CadastroUsuarioScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#F8F8F8', 
-    justifyContent: 'center', 
+    backgroundColor: '#fff',
+    paddingTop: 50,
+    paddingHorizontal: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 48,
+    left: 16,
+    zIndex: 10,
+    padding: 5,
   },
   header: {
     marginBottom: 30,
-    alignItems: 'center', 
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#002764',
   },
   inputContainer: {
     marginBottom: 15,
   },
   label: {
     fontSize: 16,
-    color: '#555',
-    marginBottom: 5,
+    color: '#002764',
+    marginBottom: 6,
+    fontWeight: '600',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
+    borderColor: '#bbb',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 16,
-    backgroundColor: '#FFF',
+    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#007AFF', 
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: '#00C851',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
+    marginTop: 20,
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 18,
+    color: '#fff',
     fontWeight: 'bold',
+    fontSize: 18,
   },
 });
 

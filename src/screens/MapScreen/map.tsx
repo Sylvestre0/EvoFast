@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import BottomNavigation from '@/components/bottom/BottomNavigation';
 
@@ -21,20 +21,14 @@ export default function MapScreen() {
         <Marker coordinate={eventLocation}>
           <View style={styles.markerContainer}>
             <Image
-              source={require('@/assets/images/ImageFesta.avif')}
+              source={require('@/assets/images/Logo.png')}
               style={styles.markerImage}
             />
-            <View style={styles.pin} />
           </View>
         </Marker>
       </MapView>
 
-      {/* Espaço para integração com IoT */}
-      <View style={styles.iotSection}>
-        <Text style={styles.subtitle}>Status do Dispositivo IoT</Text>
-        <Text style={styles.iotStatus}>Conectado ⚡</Text>
-      </View>
-
+     
       {/* Navegação inferior fixa */}
       <View >
         <BottomNavigation />
@@ -58,26 +52,22 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  markerContainer: {
-    alignItems: 'center',
-  },
-  markerImage: {
-    width: 79,
-    height: 79,
-    borderRadius: 79 / 2,
-    borderWidth: 2,
-    borderColor: '#fff',
-    marginBottom: -10,
-    backgroundColor: '#eee',
-  },
-  pin: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: 'red',
-    borderWidth: 1,
-    borderColor: '#fff',
-  },
+ markerContainer: {
+  width: 79,
+  height: 79,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#eee', // opcional
+},
+
+markerImage: {
+  width: 79,
+  height: 79,
+  resizeMode: 'cover',
+},
+
+ 
   iotSection: {
     padding: 16,
     backgroundColor: '#f0f0f0',
