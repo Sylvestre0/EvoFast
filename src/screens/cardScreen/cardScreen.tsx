@@ -21,10 +21,10 @@ export default function AddCardScreen() {
   const [cardNumber, setCardNumber] = useState('');
   const [cvc, setCvc] = useState('');
   const [dateCard, setDateCard] = useState('');
-  const [numberCard, setNumberCard] = useState('');
+  const [nameCard, setNameCard] = useState('');
 
   const handleAddCard = () => {
-    if (!cardNumber || !cvc || !dateCard || !numberCard) {
+    if (!cardNumber || !cvc || !dateCard || !nameCard) {
       Alert.alert('Erro', 'Preencha todos os campos.');
       return;
     }
@@ -74,10 +74,10 @@ export default function AddCardScreen() {
       </View>
 
       <TextInput
-        placeholder="Number Card"
+        placeholder="Name Card"
         style={styles.input}
-        value={numberCard}
-        onChangeText={setNumberCard}
+        value={nameCard}
+        onChangeText={setNameCard}
       />
 
       {/* Botão */}

@@ -9,26 +9,35 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import axios from 'axios';
 
-const CadastroUsuarioScreen = () => {
+export default function CadastroUsuarioScreen() {
   const navigation = useNavigation();
 
   const [nome, setNome] = useState('');
-  const [cpf, setCpf] = useState('');
   const [usuario, setUsuario] = useState('');
-  const [endereco, setEndereco] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleCadastro = () => {
-    if (nome && cpf && usuario && endereco && email && senha) {
-      Alert.alert('Sucesso!', 'Cadastro realizado com sucesso!');
-      setNome('');
-      setCpf('');
-      setUsuario('');
-      setEndereco('');
-      setEmail('');
-      setSenha('');
+  const handleCadastro = async () => {
+    if (nome && usuario && email && senha) {
+      try {
+        const response = await axios.post('https://evofast-user.free.beeceptor.com', {
+          nome,
+          usuario,
+          email,
+          senha,
+        });
+
+        Alert.alert('Sucesso!', 'Cadastro realizado com sucesso!');
+        setNome('');
+        setUsuario('');
+        setEmail('');
+        setSenha('');
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Erro', 'Não foi possível realizar o cadastro. Tente novamente.');
+      }
     } else {
       Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
     }
@@ -36,7 +45,6 @@ const CadastroUsuarioScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Botão de voltar */}
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}
@@ -59,33 +67,12 @@ const CadastroUsuarioScreen = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>CPF:</Text>
-        <TextInput
-          style={styles.input}
-          value={cpf}
-          onChangeText={setCpf}
-          placeholder="Seu CPF"
-          keyboardType="numeric"
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
         <Text style={styles.label}>Usuário:</Text>
         <TextInput
           style={styles.input}
           value={usuario}
           onChangeText={setUsuario}
           placeholder="Seu nome de usuário"
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Endereço:</Text>
-        <TextInput
-          style={styles.input}
-          value={endereco}
-          onChangeText={setEndereco}
-          placeholder="Seu endereço"
         />
       </View>
 
@@ -116,7 +103,8 @@ const CadastroUsuarioScreen = () => {
       </TouchableOpacity>
     </View>
   );
-};
+}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -172,5 +160,3 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
-
-export default CadastroUsuarioScreen;

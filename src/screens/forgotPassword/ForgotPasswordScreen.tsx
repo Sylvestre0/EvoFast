@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 export default function PasswordRecoveryScreen() {
   const navigation = useNavigation();
@@ -21,7 +22,7 @@ export default function PasswordRecoveryScreen() {
     return regex.test(email.toLowerCase());
   };
 
-  const handleSendRecovery = () => {
+  const handleSendRecovery = async () => {
     if (!email.trim()) {
       Alert.alert('Erro', 'Por favor, insira seu e-mail.');
       return;
@@ -32,15 +33,21 @@ export default function PasswordRecoveryScreen() {
     }
 
     setLoading(true);
-    // Simular requisição API
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      const response = await axios.post('https://evofast-recovery.free.beeceptor.com', { email });
+
       Alert.alert(
         'Sucesso',
         'Um link para recuperação de senha foi enviado para seu e-mail.',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
-    }, 2000);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Falha ao enviar o e-mail de recuperação. Tente novamente mais tarde.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

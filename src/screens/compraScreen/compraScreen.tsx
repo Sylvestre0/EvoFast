@@ -13,6 +13,15 @@ import { router } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
+// Simulação de dados de evento (pode ser substituído por dados da API futuramente)
+const mockEventData = {
+  nome: 'Festa Universitária',
+  local: 'Av. Paulista, 1234 - São Paulo, SP',
+  horario: '18 de Junho, 20:00h',
+  valor: 79.9,
+  imagem: require('@/assets/images/ImageFesta.png'),
+};
+
 export default function EventPurchaseScreen() {
   const navigation = useNavigation();
 
@@ -23,35 +32,36 @@ export default function EventPurchaseScreen() {
         <Ionicons name="arrow-back" size={28} color="#000" />
       </TouchableOpacity>
 
-      {/* Botão de carrinho no canto superior direito */}
+      {/* Botão de carrinho */}
       <TouchableOpacity
         style={styles.cartIconTopRight}
-        onPress={() => router.navigate('/router/cart')} // <- substitua por router.push('/router/cart') se usar expo-router
+        onPress={() => router.push('/router/cart')}
       >
         <Ionicons name="cart" size={28} color="#000" />
       </TouchableOpacity>
 
+      {/* Nome do Evento */}
+      <Text style={styles.eventName}>{mockEventData.nome}</Text>
+
       {/* Imagem do evento */}
-      <Image
-        source={require('@/assets/images/ImageFesta.png')}
-        style={styles.eventImage}
-      />
+      <Image source={mockEventData.imagem} style={styles.eventImage} />
 
       {/* Informações do evento */}
       <View style={styles.infoContainer}>
         <Text style={styles.label}>📍 Local:</Text>
-        <Text style={styles.value}>Av. Paulista, 1234 - São Paulo, SP</Text>
+        <Text style={styles.value}>{mockEventData.local}</Text>
 
         <Text style={styles.label}>🕒 Horário:</Text>
-        <Text style={styles.value}>18 de Junho, 20:00h</Text>
+        <Text style={styles.value}>{mockEventData.horario}</Text>
 
         <Text style={styles.label}>💰 Valor:</Text>
-        <Text style={styles.value}>R$ 79,90</Text>
+        <Text style={styles.value}>R$ {mockEventData.valor.toFixed(2)}</Text>
       </View>
 
       {/* Botão "Adicionar ao Carrinho" */}
       <TouchableOpacity
         style={styles.cartButton}
+        onPress={() => alert('Item adicionado ao carrinho!')}
       >
         <Ionicons name="cart" size={32} color="#fff" style={styles.cartIcon} />
         <Text style={styles.cartText}>Adicionar ao Carrinho</Text>
@@ -79,6 +89,14 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 10,
     padding: 10,
+  },
+  eventName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#002764',
+    textAlign: 'center',
+    justifyContent:'center',
+    marginBottom: 12,
   },
   eventImage: {
     width: width,
