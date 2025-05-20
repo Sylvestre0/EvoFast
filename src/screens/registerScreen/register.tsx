@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   TextInput,
@@ -9,7 +8,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import axios from 'axios';
+import api from '../../services/api';
+import { styles } from './registerStyle';
 
 export default function CadastroUsuarioScreen() {
   const navigation = useNavigation();
@@ -20,28 +20,40 @@ export default function CadastroUsuarioScreen() {
   const [senha, setSenha] = useState('');
 
   const handleCadastro = async () => {
-    if (nome && usuario && email && senha) {
-      try {
-        const response = await axios.post('https://evofast-user.free.beeceptor.com', {
-          nome,
-          usuario,
-          email,
-          senha,
-        });
+  if (!nome || !usuario || !email || !senha) {
+    Alert.alert('Preencha todos os campos');
+    return;
+  }
 
-        Alert.alert('Sucesso!', 'Cadastro realizado com sucesso!');
-        setNome('');
-        setUsuario('');
-        setEmail('');
-        setSenha('');
-      } catch (error) {
-        console.error(error);
-        Alert.alert('Erro', 'Não foi possível realizar o cadastro. Tente novamente.');
-      }
+  if (senha.length < 8) {
+    Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
+    return;
+  }
+
+  try {
+    const response = await api.post('/usuarios', {
+      nome,
+      usuario,
+      email,
+      senha,
+    });
+
+    Alert.alert('Usuário cadastrado com sucesso!');
+    setNome('');
+    setUsuario('');
+    setEmail('');
+    setSenha('');
+  } catch (error) {
+    if (error.response?.status === 409) {
+      Alert.alert('Erro', 'Usuário ou e-mail já cadastrado.');
     } else {
-      Alert.alert('Atenção', 'Por favor, preencha todos os campos.');
+      Alert.alert('Erro ao cadastrar. Verifique a API.');
     }
-  };
+    console.error(error);
+  }
+};
+
+
 
   return (
     <View style={styles.container}>
@@ -106,57 +118,3 @@ export default function CadastroUsuarioScreen() {
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 50,
-    paddingHorizontal: 20,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 48,
-    left: 16,
-    zIndex: 10,
-    padding: 5,
-  },
-  header: {
-    marginBottom: 30,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#002764',
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    color: '#002764',
-    marginBottom: 6,
-    fontWeight: '600',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#bbb',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  button: {
-    backgroundColor: '#00C851',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-});

@@ -1,20 +1,24 @@
-import { useState } from "react";
-import {InputText,Description,Container,Props} from '@/components/Inputs/style'
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { InputText, Container, Props } from '@/components/Inputs/style';
 
-export default function Password({ placeholder = "Digite sua senha:" }: Props) {
+const Password = forwardRef(({ placeholder = "Digite sua senha:" }: Props, ref) => {
   const [text, setText] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    getValue: () => text,
+  }));
 
   return (
     <Container>
-        <InputText
-            placeholder={placeholder}
-            autoFocus={true}
-            blurOnSubmit={true}
-            value={text}
-            onChangeText={setText}
-            secureTextEntry={true}
-            returnKeyType="done"
-        />
+      <InputText
+        placeholder={placeholder}
+        value={text}
+        onChangeText={setText}
+        secureTextEntry={true}
+        returnKeyType="done"
+      />
     </Container>
   );
-}
+});
+
+export default Password;
