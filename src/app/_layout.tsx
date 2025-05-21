@@ -7,8 +7,10 @@ import 'react-native-reanimated';
 export default function RootLayout() {
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack screenOptions={{
+          headerShown: false
+        }}>
+        <Stack.Screen name="index"/>
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

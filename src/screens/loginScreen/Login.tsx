@@ -15,8 +15,8 @@ export default function   LoginScreen() {
   const passwordRef = useRef(null);
 
   const handleLogin = async () => {
-    const DevMode = true
-    if (DevMode == true) {
+    const DevMode = false
+    if (DevMode == false) {
       router.navigate('/router/home');
       return;
 
@@ -35,7 +35,7 @@ export default function   LoginScreen() {
 
       if (response.status === 200) {
         Alert.alert("Sucesso", "Login realizado!");
-        router.navigate('/router/home');
+        router.navigate('/router/(Navigations)/home');
       }
     } catch (error) {
       const status = error.response?.status;
