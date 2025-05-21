@@ -1,4 +1,3 @@
-import BottomNavigation from "@/components/bottom/BottomNavigation";
 import { router } from "expo-router";
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
@@ -39,9 +38,7 @@ export default function HomeScreen() {
           Comece agora e leve seus eventos para o próximo nível!
         </Text>
 
-      </View>
-      <BottomNavigation />
-    
+      </View>    
     </View>
   );
 }

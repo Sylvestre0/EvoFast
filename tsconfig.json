@@ -1,8 +1,8 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "module": "esnext",       
-    "target": "es2017",       
+    "module": "esnext",
+    "target": "es2017",
     "jsx": "react-native",
     "baseUrl": "./",
     "paths": {
@@ -15,7 +15,9 @@
     "**/*.ts",
     "**/*.tsx",
     "src",
-    "declarations.d.ts"
-  ],
-  
+    "declarations.d.ts",
+    "src/app",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
 }

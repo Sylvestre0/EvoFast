@@ -9,7 +9,4 @@ export const Logo = styled(Image).attrs( props => ({
 }))`
     height: 271px;
     width: 263px;
-    position: relative;
-    top: 10%;
-    margin-bottom: 70px;
 `

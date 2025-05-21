@@ -13,12 +13,12 @@ export const InputText = styled(TextInput)`
 `;
 
 export const Description = styled(Text)`
-    position: relative;
-    left: 10px;
-    color:rgb(37, 37, 37);
-    font-size:20;
-    text-shadow: 1px 1px 1px white;
-    font-weight: 500;
+  position: relative;
+  left: 10px;
+  color:rgb(37, 37, 37);
+  font-size:20;
+  text-shadow: 1px 1px 1px white;
+  font-weight: 500;
 `
 
 export const Container = styled(View)`

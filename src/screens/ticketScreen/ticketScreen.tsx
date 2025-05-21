@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import BottomNavigation from '@/components/bottom/BottomNavigation';
 import { styles } from './ticketStyle';
 
 const mockTickets = [
@@ -55,9 +54,6 @@ export default function TicketsScreen() {
           </View>
         )}
       />
-
-      {/* Navegação inferior */}
-      <BottomNavigation />
     </View>
   );
 }

@@ -9,7 +9,7 @@ export default function BottomNavigation() {
 
   return (
     <View style={styles.bottomNav}>
-      <TouchableOpacity
+      <TouchableOpacity 
         style={styles.navButton}
         onPress={() => router.navigate('/router/home')}
       >

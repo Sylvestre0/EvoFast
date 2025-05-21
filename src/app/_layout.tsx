@@ -1,17 +1,16 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCustomFonts } from '@/assets/fonts/fonts';
+import 'react-native-reanimated';
 
 export default function RootLayout() {
-const loaded = useCustomFonts();
-
-if (!loaded) return null;
-
-return (
+  return (
     <ThemeProvider value={DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }} />
-        <StatusBar style="auto" />  
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+      <StatusBar style="auto" />
     </ThemeProvider>
-);
+  );
 }

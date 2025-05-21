@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router'; 
-import BottomNavigation from '@/components/bottom/BottomNavigation';
 import { styles } from './searchStyle';
 
 const mockEvents = [
@@ -80,8 +79,6 @@ export default function EventSearchScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      <BottomNavigation />
     </View>
   );
 }

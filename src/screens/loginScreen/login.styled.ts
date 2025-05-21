@@ -35,13 +35,3 @@ export const ForgotText = styled.Text`
   font-size: 14px;
   text-decoration: underline;
 `;
-
-export const BackButton = styled.TouchableOpacity`
-  margin-top: 20px;
-  padding: 10px;
-`;
-
-export const BackText = styled.Text`
-  color: #002764; 
-  font-size: 16px;
-`;

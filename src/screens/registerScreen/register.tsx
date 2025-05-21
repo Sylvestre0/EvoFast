@@ -1,120 +1,76 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import api from '../../services/api';
-import { styles } from './registerStyle';
+import React, { useRef } from 'react';
+import { Logo } from "@/components/Logo/Logo.style";
+import Password from "@/components/Inputs/PassWord";
+import Email from "@/components/Inputs/Email";
+import Name from "@/components/Inputs/Name"; 
+import { Login, Personbottom } from "@/components/bottom/bottomInput";
+import { WaterMask } from "@/components/Marca_D'agua/cooporation";
+import { router } from 'expo-router';
+import { Text, Alert, TouchableOpacity } from 'react-native';
+import {API} from '@/services/api';
+import { Container, RegisterButton, RegisterText, BackButton, BackText } from './registerStyle'; // Importar novos estilos
 
-export default function CadastroUsuarioScreen() {
-  const navigation = useNavigation();
+export default function RegisterScreen() {
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
 
-  const [nome, setNome] = useState('');
-  const [usuario, setUsuario] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+  const handleRegister = async () => {
+    const name = nameRef.current?.getValue();
+    const email = emailRef.current?.getValue();
+    const password = passwordRef.current?.getValue();
 
-  const handleCadastro = async () => {
-  if (!nome || !usuario || !email || !senha) {
-    Alert.alert('Preencha todos os campos');
-    return;
-  }
-
-  if (senha.length < 8) {
-    Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
-    return;
-  }
-
-  try {
-    const response = await api.post('/usuarios', {
-      nome,
-      usuario,
-      email,
-      senha,
-    });
-
-    Alert.alert('Usuário cadastrado com sucesso!');
-    setNome('');
-    setUsuario('');
-    setEmail('');
-    setSenha('');
-  } catch (error) {
-    if (error.response?.status === 409) {
-      Alert.alert('Erro', 'Usuário ou e-mail já cadastrado.');
-    } else {
-      Alert.alert('Erro ao cadastrar. Verifique a API.');
+    if (!name?.trim() || !email?.trim() || !password?.trim()) {
+      Alert.alert("Erro", "Preencha todos os campos.");
+      return;
     }
-    console.error(error);
-  }
-};
 
+    if (password.length < 8) {
+      Alert.alert("Erro", "A senha deve ter pelo menos 8 caracteres.");
+      return;
+    }
 
+    try {
+      const response = await API.post('/register', {
+        name: name,
+        email,
+        password: password,
+        googleId: null, 
+      });
+
+      if (response.status === 200) {
+        Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
+        router.navigate('/router/login'); // Redireciona para a tela de login após o cadastro
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const mensagem = error.response?.data?.error;
+      Alert.alert(`Erro: ${mensagem} status-Code: ${status}`);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons name="arrow-back" size={28} color="#002764" />
-      </TouchableOpacity>
+    <Container>
+      <Logo />
+      <Name ref={nameRef} />
+      <Email ref={emailRef} />
+      <Password ref={passwordRef} />
 
-      <View style={styles.header}>
-        <Text style={styles.title}>Cadastro de Usuário</Text>
-      </View>
+      <Personbottom onPress={handleRegister}>
+        <Login>Cadastrar</Login>
+      </Personbottom>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Nome:</Text>
-        <TextInput
-          style={styles.input}
-          value={nome}
-          onChangeText={setNome}
-          placeholder="Seu nome completo"
-        />
-      </View>
+      <Text> ou </Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Usuário:</Text>
-        <TextInput
-          style={styles.input}
-          value={usuario}
-          onChangeText={setUsuario}
-          placeholder="Seu nome de usuário"
-        />
-      </View>
+      <RegisterButton onPress={() => router.navigate('/router/login')}>
+        <RegisterText>Já tem uma conta? Faça login</RegisterText>
+      </RegisterButton>
+      
+      <BackButton onPress={() => router.navigate('/router/login')}>
+        <BackText>Voltar</BackText>
+      </BackButton>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>E-mail:</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Seu e-mail"
-          keyboardType="email-address"
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Senha:</Text>
-        <TextInput
-          style={styles.input}
-          value={senha}
-          onChangeText={setSenha}
-          placeholder="Sua senha"
-          secureTextEntry
-        />
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-    </View>
+      <WaterMask>©Sylvester Coop</WaterMask>
+    </Container>
   );
 }
-
-
