@@ -5,6 +5,8 @@ const authService = new AuthService();
 
 // Registro de usuário
 export const register = async (req: Request, res: Response) => {
+  console.log("teste allright")
+
   const { name, email, password, googleId } = req.body;
   try {
     const user = await authService.registerUser(name, email, password, googleId);
@@ -23,6 +25,7 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 export const login = async (req: Request, res: Response) => {
+  console.log("teste allright")
   const { email, password} = req.body;
 
   try {

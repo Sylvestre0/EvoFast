@@ -15,11 +15,10 @@ export default function   LoginScreen() {
   const passwordRef = useRef(null);
 
   const handleLogin = async () => {
-    const DevMode = true
+    const DevMode = false
     if (DevMode == true) {
       router.navigate('/router/home');
       return;
-
     }
 
     const email = emailRef.current?.getValue();

@@ -13,7 +13,7 @@ export class EventLocations {
       this.eventRepository = new EventRepository;
   }
 
-  async PublishEvents(pais: string,CEP: string,numero: number | undefined, image: Buffer,imageType:string): Promise<any> {
+  async PublishEvents(pais: string,CEP: string,numero: number | undefined, image: Buffer,imageType:string,cost:number,data:Date,eventName:string): Promise<any> {
     
       if (!isValidCEP(CEP)) {
           throw new Error('CEP inválido.');
@@ -34,7 +34,7 @@ export class EventLocations {
           } else {
               throw new Error('Endereço não encontrado pela API de geocodificação.');
           }
-          const event = await this.eventRepository.addEvent(pais,CEP,numero,image,latitude,longitude,imageType);
+          const event = await this.eventRepository.addEvent(pais,CEP,numero,image,latitude,longitude,imageType,cost,data,eventName);
           return event;
 
       } catch (error: any) {

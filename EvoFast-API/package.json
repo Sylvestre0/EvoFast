@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/server.ts",
-    "eventdatabase": "ts-node src/migrations/eventsMigrations.ts",
+    "database2": "ts-node src/migrations/eventsMigrations.ts",
     "teste": "ts-node teste.ts"
   },
   "keywords": [],

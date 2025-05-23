@@ -2,11 +2,9 @@
 
 import axios from 'axios';
 import { GeoapifyFeatureProperties, GeoapifyQueryParams } from '../models/geoApiModel';
-import dotenv from 'dotenv';
 
 export const searchAddressGeoapify = async (params: GeoapifyQueryParams): Promise<GeoapifyFeatureProperties | null> => {
   const { cep, numero, lang = 'pt', filter = 'countrycode:br' } = params;
-  dotenv.config();
 
   let queryText = cep;
   if (numero !== undefined) {
@@ -14,7 +12,7 @@ export const searchAddressGeoapify = async (params: GeoapifyQueryParams): Promis
   }
 
   const encodedQuery = encodeURIComponent(queryText);
-  const apiKey = process.env.GEOAPIFY_API_KEY;
+  const apiKey = "c535190236564667ac40594a31345c0d"
 
   if (!apiKey) {
     throw new Error('GEOAPIFY_API_KEY não definida nas variáveis de ambiente.');
