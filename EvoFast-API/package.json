@@ -4,21 +4,27 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/server.ts"
+    "start": "ts-node src/server.ts",
+    "eventdatabase": "ts-node src/migrations/eventsMigrations.ts",
+    "teste": "ts-node teste.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.9.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "dotenv": "^16.5.0",
     "express": "^4.21.1",
+    "multer": "^2.0.0",
     "pg": "^8.13.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.8.1",
     "@types/pg": "^8.11.10",
     "ts-node": "^10.9.2",

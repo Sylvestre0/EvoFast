@@ -15,8 +15,8 @@ export default function   LoginScreen() {
   const passwordRef = useRef(null);
 
   const handleLogin = async () => {
-    const DevMode = false
-    if (DevMode == false) {
+    const DevMode = true
+    if (DevMode == true) {
       router.navigate('/router/home');
       return;
 
