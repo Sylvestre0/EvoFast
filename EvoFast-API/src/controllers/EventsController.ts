@@ -5,15 +5,15 @@ const eventLocations = new EventLocations();
 
 export const PublishEvents = async (req: Request, res: Response) => {
   const imageFile = req.file
-  const { pais,CEP,numero,cost,data,eventName } = req.body;
+  const { eventName,data,pais,preco,enderecoCompleto } = req.body;
 
   const imagemtype = imageFile!.mimetype;
   
-  console.log(imageFile,pais,CEP,numero)
+  console.log(eventName,data,pais,preco,enderecoCompleto)
 
   const imagem: Buffer = imageFile!.buffer;
   try {
-    const Location = await eventLocations.PublishEvents(pais,CEP,numero,imagem,imagemtype,cost,data,eventName);
+    const Location = await eventLocations.PublishEvents(eventName,data,pais,preco,enderecoCompleto,imagem,imagemtype);
     res.status(201).json(Location);
   } catch (err: any) {  
     if (err.message === 'CEP inválido.' || err.message === 'Nenhuma imagem foi enviada para o evento.') {

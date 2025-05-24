@@ -13,12 +13,9 @@ export class EventLocations {
       this.eventRepository = new EventRepository;
   }
 
-  async PublishEvents(pais: string,CEP: string,numero: number | undefined, image: Buffer,imageType:string,cost:number,data:Date,eventName:string): Promise<any> {
-    
-      if (!isValidCEP(CEP)) {
-          throw new Error('CEP inválido.');
-      }
-      if (!image) {
+  async PublishEvents(eventName:string,data:Date,pais:string,preco:number,enderecoCompleto:string,imagem:Buffer,imagetype:string): Promise<any> {
+
+      if (!imagem) {
           throw new Error('Nenhuma imagem foi enviada para o evento.');
       }
 
@@ -26,7 +23,7 @@ export class EventLocations {
       let longitude: number;
 
       try {
-          const geoapifyResult = await searchAddressGeoapify({ cep: CEP, numero: numero });
+          const geoapifyResult = await searchAddressGeoapify(enderecoCompleto);
 
           if (geoapifyResult) {
               latitude = geoapifyResult.lat;
@@ -34,7 +31,7 @@ export class EventLocations {
           } else {
               throw new Error('Endereço não encontrado pela API de geocodificação.');
           }
-          const event = await this.eventRepository.addEvent(pais,CEP,numero,image,latitude,longitude,imageType,cost,data,eventName);
+          const event = await this.eventRepository.addEvent(pais,imagem,latitude,longitude,imagetype,preco,data,eventName,enderecoCompleto);
           return event;
 
       } catch (error: any) {
@@ -44,7 +41,6 @@ export class EventLocations {
 async ActiveEvents() {
     try {
       const events = await this.eventRepository.getEvent();
-
       const eventsWithBase64Images = events.map((event: any) => {
         let imageDataUri: string | null = null;
 

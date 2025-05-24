@@ -5,8 +5,10 @@ import { Alert, Platform } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Country, CountryCode } from 'react-native-country-picker-modal';
 import { eventRouter } from '@/services/api'; 
-import { searchAddressAutocompleteGeoapify, GeoapifyAutocompleteResult, searchAddressGeoapify } from '@/utils/geoAPI';
+import { searchAddressAutocompleteGeoapify, GeoapifyAutocompleteResult } from '@/utils/geoAPI';
 import debounce from 'lodash.debounce';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { SaveFormat } from 'expo-image-manipulator';
 
 export function useEventForm() {
     const navigation = useNavigation();
@@ -26,64 +28,100 @@ export function useEventForm() {
     const [countryName, setCountryName] = useState("Brasil");
     const [showCountryPicker, setShowCountryPicker] = useState(false);
 
-    const [addressInput, setAddressInput] = useState(""); // Campo para a busca de endereço com autocompletar
+    const [addressInput, setAddressInput] = useState("");
     const [addressSuggestions, setAddressSuggestions] = useState<GeoapifyAutocompleteResult[]>([]);
-    const [selectedAddressLat, setSelectedAddressLat] = useState<number | null>(null);
-    const [selectedAddressLon, setSelectedAddressLon] = useState<number | null>(null);
-    const [selectedAddressFull, setSelectedAddressFull] = useState<string | null>(null); // Endereço completo selecionado
-    // Mantenha esses para envio ao backend, se o autocomplete não preencher tudo
-    const [eventCEP, setEventCEP] = useState(""); 
-    const [eventNumber, setEventNumber] = useState("");
-    const [eventStreet, setEventStreet] = useState("");
-    const [eventCity, setEventCity] = useState("");
+    const [selectedAddressFull, setSelectedAddressFull] = useState<string | null>(null);
     const [eventState, setEventState] = useState("");
 
 
     const [isFree, setIsFree] = useState(false);
     const [eventPrice, setEventPrice] = useState("");
 
-    // --- Funções Auxiliares ---
-    const getFileExtensionFromMime = (mimeType: string) => {
-        if (!mimeType) return 'jpg';
-        const parts = mimeType.split('/');
-        return parts[1] || 'jpg';
-    };
-
     // --- Funções de Manipulação de Imagem ---
-    const openCamera = async () => {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert("Permissão Necessária", "Precisamos da permissão para acessar sua câmera para tirar fotos.");
-            return;
-        }
-        const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true, aspect: [4, 3], quality: 1, base64: true,
-        });
-        if (!result.canceled && result.assets.length > 0) {
-            const asset = result.assets[0];
-            setImageUri(asset.uri); setImageBase64(asset.base64);
-            setImageMimeType(asset.mimeType || 'image/jpeg');
-            setImageFileName(asset.fileName || `event_image_${Date.now()}.${getFileExtensionFromMime(asset.mimeType || '')}`);
-        }
-    };
+ const imageCUT = (mimeType: string) => {
+  switch (mimeType) {
+    case 'image/jpeg': return 'jpg';
+    case 'image/png': return 'png';
+    case 'image/gif': return 'gif';
+    default: return 'jpeg';
+  }
+};
 
-    const openImageLibrary = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert("Permissão Necessária", "Precisamos da permissão para acessar sua galeria de imagens.");
-            return;
-        }
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 1, base64: true,
-        });
-        if (!result.canceled && result.assets.length > 0) {
-            const asset = result.assets[0];
-            setImageUri(asset.uri); setImageBase64(asset.base64);
-            setImageMimeType(asset.mimeType || 'image/jpeg');
-            setImageFileName(asset.fileName || `event_image_${Date.now()}.${getFileExtensionFromMime(asset.mimeType || '')}`);
-        }
-    };
+const MAX_IMAGE_WIDTH = 160;
+const MAX_IMAGE_HEIGHT = 120;
+const COMPRESSION_QUALITY = 0.7;
+
+const manipulateAndSetImage = async (asset: ImagePicker.ImagePickerAsset) => {
+    const originalUri = asset.uri;
+    const imageWidth = asset.width;
+    const imageHeight = asset.height;
+
+    let actions = [];
+
+    const widthScaleFactor = MAX_IMAGE_WIDTH / imageWidth;
+    const heightScaleFactor = MAX_IMAGE_HEIGHT / imageHeight;
+    const scaleFactor = Math.min(widthScaleFactor, heightScaleFactor);
+
+    if (scaleFactor < 1) {
+      const newWidth = imageWidth * scaleFactor;
+      const newHeight = imageHeight * scaleFactor;
+      actions.push({ resize: { width: Math.round(newWidth), height: Math.round(newHeight) } });
+    } else {
+        console.log('Imagem original já está dentro das dimensões máximas. Apenas compressão será aplicada.');
+    }
+
+    try {
+        const manipulatedImage = await ImageManipulator.manipulateAsync(
+            originalUri,
+            actions,
+            { compress: COMPRESSION_QUALITY, format: SaveFormat.JPEG, base64: true }
+        );
+
+        setImageUri(manipulatedImage.uri);
+        setImageBase64(manipulatedImage.base64);
+        setImageMimeType(asset.mimeType || 'image/jpeg');
+        setImageFileName(asset.fileName || `event_image_${Date.now()}.${imageCUT(asset.mimeType || '')}`);
+
+        console.log('--- Imagem Processada Automaticamente ---');
+        console.log('Dimensões Finais:', manipulatedImage.width, 'x', manipulatedImage.height);
+
+    } catch (error) {
+        console.error('Erro ao processar imagem automaticamente:', error);
+        Alert.alert('Erro', 'Não foi possível otimizar a imagem. Tente novamente.');
+    }
+};
+
+const openCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+        Alert.alert("Permissão Necessária", "Precisamos da permissão para acessar sua câmera para tirar fotos.");
+        return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+        await manipulateAndSetImage(result.assets[0]);
+    }
+};
+
+const openImageLibrary = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+        Alert.alert("Permissão Necessária", "Precisamos da permissão para acessar sua galeria de imagens.");
+        return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+        await manipulateAndSetImage(result.assets[0]);
+    }
+};
 
     const showImageOptions = () => {
         Alert.alert("Selecionar Imagem", "De onde você gostaria de pegar a imagem?",
@@ -119,7 +157,7 @@ export function useEventForm() {
     // Função debounced para chamar a API de autocompletar
     const debouncedFetchAddressSuggestions = useCallback(
         debounce(async (text: string) => {
-            if (text.length > 3) { // Começa a buscar a partir de 4 caracteres para economizar créditos
+            if (text.length > 2) { // Começa a buscar a partir de 4 caracteres para economizar créditos
                 try {
                     const results = await searchAddressAutocompleteGeoapify(text, 'pt', `countrycode:${countryCode.toLowerCase()}`);
                     setAddressSuggestions(results);
@@ -130,42 +168,27 @@ export function useEventForm() {
             } else {
                 setAddressSuggestions([]); // Limpa as sugestões se o texto for muito curto
             }
-        }, 500), // Debounce de 500ms
+        }, 250), // Debounce de 500ms
         [countryCode] // Recria a função se o countryCode mudar
     );
 
     const handleAddressInputChange = (text: string) => {
         setAddressInput(text);
         debouncedFetchAddressSuggestions(text);
-        // Resetar os campos de endereço específicos se o usuário estiver digitando novamente
         setSelectedAddressFull(null);
-        setSelectedAddressLat(null);
-        setSelectedAddressLon(null);
-        setEventStreet("");
-        setEventNumber("");
-        setEventCEP("");
-        setEventCity("");
         setEventState("");
     };
 
     const handleAddressSelection = (suggestion: GeoapifyAutocompleteResult) => {
-        setAddressInput(suggestion.formatted); // Preenche o input com o endereço formatado
+        setAddressInput(suggestion.formatted); 
         setSelectedAddressFull(suggestion.formatted);
-        setSelectedAddressLat(suggestion.lat);
-        setSelectedAddressLon(suggestion.lon);
-        setAddressSuggestions([]); // Esconde as sugestões
-
-        // Preenche os campos individuais com dados do autocomplete para envio
-        setEventStreet(suggestion.street || '');
-        setEventNumber(suggestion.housenumber || '');
-        setEventCEP(suggestion.postcode || '');
-        setEventCity(suggestion.city || '');
+        setAddressSuggestions([]);
         setEventState(suggestion.state || '');
     };
 
     // --- Funções de Submissão ---
     const handleSubmit = async () => {
-        if (!eventName || !eventDate || !countryName || !selectedAddressFull || !selectedAddressLat || !selectedAddressLon || !eventStreet || !eventNumber || !eventCEP || !eventCity || !eventState) {
+        if (!eventName || !eventDate || !countryName || !selectedAddressFull) {
             Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios e selecione um endereço válido.");
             return;
         }
@@ -182,19 +205,8 @@ export function useEventForm() {
         formData.append('eventName', eventName);
         formData.append('data', formattedDateForBackend);
         formData.append('pais', countryName);
-        
-        // Use as coordenadas e o endereço completo do autocomplete
-        formData.append('latitude', String(selectedAddressLat));
-        formData.append('longitude', String(selectedAddressLon));
-        formData.append('enderecoCompleto', selectedAddressFull); // Novo campo para o endereço completo formatado
-        
-        // E os campos individuais, se seu backend ainda os espera separadamente
-        formData.append('CEP', eventCEP);
-        formData.append('numero', eventNumber);
-        formData.append('rua', eventStreet); // Adicione 'rua'
-        formData.append('cidade', eventCity); // Adicione 'cidade'
-        formData.append('estado', eventState); // Adicione 'estado'
 
+        formData.append('enderecoCompleto', selectedAddressFull); 
 
         formData.append('preco', isFree ? '0' : eventPrice);
 
@@ -216,9 +228,9 @@ export function useEventForm() {
                 setImageUri(null); setImageBase64(null); setImageMimeType(null); setImageFileName(null);
                 setEventName(""); setEventDate(""); setSelectedDateObject(new Date()); setShowDatePicker(false);
                 setCountryCode("BR"); setCountryName("Brasil"); setShowCountryPicker(false);
-                setAddressInput(""); setAddressSuggestions([]); setSelectedAddressLat(null); setSelectedAddressLon(null);
-                setSelectedAddressFull(null); setEventCEP(""); setEventNumber(""); setIsFree(false); setEventPrice("");
-                setEventStreet(""); setEventCity(""); setEventState(""); // Resetar os novos campos
+                setAddressInput(""); setAddressSuggestions([]);
+                setSelectedAddressFull(null); setIsFree(false); setEventPrice("");
+                setEventState(""); 
                 navigation.goBack();
             } else {
                 Alert.alert("Erro", responseData.error || "Erro ao criar evento.");

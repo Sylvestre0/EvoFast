@@ -107,7 +107,7 @@ export const searchAddressAutocompleteGeoapify = async (
     lang: string = 'pt',
     filter: string = 'countrycode:br'
 ): Promise<GeoapifyAutocompleteResult[]> => {
-    const apiKey = process.env.GEOAPIFY_API_KEY;
+    const apiKey = "c535190236564667ac40594a31345c0d"
 
     if (!apiKey) {
         throw new Error('GEOAPIFY_API_KEY não definida nas variáveis de ambiente. Verifique sua configuração.');

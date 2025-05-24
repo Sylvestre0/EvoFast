@@ -64,9 +64,8 @@ export default function MapScreen() {
                 latitude: parseFloat(event.latitude),
                 longitude: parseFloat(event.longitude),
               }}
-              title={event.pais}
-              description={`CEP: ${event.cep}, Número: ${event.numero}`}
-
+              title={`${event.eventname}`}
+              description={`${event.endereco_completo}`}
               image={{ uri: event.imagem }} 
             />
           ))}

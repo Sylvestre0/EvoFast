@@ -7,6 +7,7 @@ router.post('/login', login)
 router.post('/register',register)
 
 router.get('/test', (req, res) => {
+  console.log("teste")
   res.json({ message: 'API está funcionando!' });
 });
 

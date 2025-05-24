@@ -27,9 +27,8 @@ export default function CreateEventScreen() {
     imageUri, eventName, eventDate, showDatePicker, selectedDateObject,
     countryCode, countryName, showCountryPicker, addressInput,
     addressSuggestions, isFree, eventPrice,
-    setImageUri, setEventName, setEventDate, setShowDatePicker, setSelectedDateObject,
-    setCountryCode, setCountryName, setShowCountryPicker, setAddressInput,
-    setAddressSuggestions, setIsFree, setEventPrice,
+    setEventName, setShowDatePicker,
+    setShowCountryPicker,setIsFree, setEventPrice,
     showImageOptions, handleDateChange, onSelectCountry,
     handleAddressInputChange, handleAddressSelection, handleSubmit
   } = useEventForm(); 
@@ -110,28 +109,9 @@ export default function CreateEventScreen() {
               <SuggestionText>{item.formatted}</SuggestionText>
             </SuggestionItem>
           )}
-          // Você pode precisar adicionar um estilo para a FlatList para que ela não se expanda
-          // além do limite e fique sobreposta, por exemplo, maxHeight
           style={{ maxHeight: 200, borderWidth: 1, borderColor: '#ccc', zIndex: 1000 }} 
         />
       )}
-      {/* FIM DO NOVO CAMPO */}
-
-      {/* Você pode remover os campos de CEP e Número, se o autocomplete for o único método.
-          Se quiser mantê-los como fallback ou para validação, ok.
-          Se mantiver, considere preenchê-los automaticamente na seleção do autocomplete.
-          Para este exemplo, vou manter, mas com o preenchimento automático. */}
-      {/* <Input
-        placeholder="CEP (preenchido automaticamente)"
-        value={eventCEP} // Agora preenchido pelo autocomplete
-        editable={false} // Não editável, apenas exibição
-      />
-      <Input
-        placeholder="Número (preenchido automaticamente)"
-        value={eventNumber} // Agora preenchido pelo autocomplete
-        editable={false} // Não editável, apenas exibição
-      />
-      */}
 
       <CheckboxContainer onPress={() => setIsFree(!isFree)}>
         <Checkbox isChecked={isFree} />

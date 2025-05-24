@@ -38,9 +38,9 @@ export default function RegisterScreen() {
         googleId: null, 
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
-        router.navigate('/router/login'); // Redireciona para a tela de login após o cadastro
+        router.navigate('/router/home');
       }
     } catch (error) {
       const status = error.response?.status;
