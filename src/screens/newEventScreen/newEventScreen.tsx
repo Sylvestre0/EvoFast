@@ -1,8 +1,17 @@
 import React from "react";
-import { Platform, TouchableOpacity, Alert, FlatList, Text, View } from "react-native";
+import {
+  Platform,
+  TouchableOpacity,
+  Alert,
+  FlatList,
+  Text,
+  View,
+  ScrollView, 
+  KeyboardAvoidingView,
+} from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CountryPicker from 'react-native-country-picker-modal';
-import { useEventForm } from '@/screens/newEventScreen/script'; // Importa o hook
+import { useEventForm } from '@/screens/newEventScreen/script';
 
 import {
   BackButton,
@@ -10,7 +19,7 @@ import {
   Checkbox,
   CheckboxContainer,
   CheckboxLabel,
-  Container,
+  Container, 
   EventImage,
   ImagePickerContainer,
   ImagePlaceholderText,
@@ -28,108 +37,121 @@ export default function CreateEventScreen() {
     countryCode, countryName, showCountryPicker, addressInput,
     addressSuggestions, isFree, eventPrice,
     setEventName, setShowDatePicker,
-    setShowCountryPicker,setIsFree, setEventPrice,
+    setShowCountryPicker, setIsFree, setEventPrice,
     showImageOptions, handleDateChange, onSelectCountry,
-    handleAddressInputChange, handleAddressSelection, handleSubmit
-  } = useEventForm(); 
+    handleAddressInputChange, handleAddressSelection, handleSubmit, isSubmitting
+  } = useEventForm();
 
   return (
-    <Container>
-      <BackButton onPress={() => router.back()}>
-        <BackButtonText>← Voltar</BackButtonText>
-      </BackButton>
+    <Container> 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }} 
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+          keyboardShouldPersistTaps="handled" 
+        >
 
-      <ImagePickerContainer onPress={showImageOptions}>
-        {imageUri ? (
-          <EventImage source={{ uri: imageUri }} />
-        ) : (
-          <ImagePlaceholderText>Toque para adicionar uma imagem</ImagePlaceholderText>
-        )}
-      </ImagePickerContainer>
+          <BackButton onPress={() => router.back()}>
+            <BackButtonText>← Voltar</BackButtonText>
+          </BackButton>
 
-      <Input
-        placeholder="Nome do Evento"
-        value={eventName}
-        onChangeText={setEventName}
-      />
+          <ImagePickerContainer onPress={showImageOptions}>
+            {imageUri ? (
+              <EventImage source={{ uri: imageUri }} />
+            ) : (
+              <ImagePlaceholderText>Toque para adicionar uma imagem</ImagePlaceholderText>
+            )}
+          </ImagePickerContainer>
 
-      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-        <Input
-          placeholder="Data do Evento (DD/MM/AAAA)"
-          value={eventDate}
-          editable={false}
-          pointerEvents="none"
-        />
-      </TouchableOpacity>
+          <Input
+            placeholder="Nome do Evento"
+            value={eventName}
+            onChangeText={setEventName}
+          />
 
-      {showDatePicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={selectedDateObject}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <Input
+              placeholder="Data do Evento (DD/MM/AAAA)"
+              value={eventDate}
+              editable={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => setShowCountryPicker(true)}>
-        <Input
-          placeholder="País"
-          value={countryName || "Selecione o País"}
-          editable={false}
-          pointerEvents="none"
-        />
-      </TouchableOpacity>
-
-      <CountryPicker
-        {...{
-          countryCode,
-          onSelect: onSelectCountry,
-          withFilter: true,
-          withFlag: true,
-          withEmoji: false,
-          withCountryNameButton: true,
-          onClose: () => setShowCountryPicker(false),
-          visible: showCountryPicker,
-        }}
-      />
-
-      {/* NOVO CAMPO DE ENDEREÇO COM AUTOCOMPLETAR */}
-      <Input
-        placeholder="Endereço Completo (Rua, Número, Cidade, CEP)"
-        value={addressInput}
-        onChangeText={handleAddressInputChange}
-      />
-      {addressSuggestions.length > 0 && (
-        <FlatList
-          data={addressSuggestions}
-          keyExtractor={(item) => item.place_id}
-          renderItem={({ item }) => (
-            <SuggestionItem onPress={() => handleAddressSelection(item)}>
-              <SuggestionText>{item.formatted}</SuggestionText>
-            </SuggestionItem>
+          {showDatePicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={selectedDateObject}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />
           )}
-          style={{ maxHeight: 200, borderWidth: 1, borderColor: '#ccc', zIndex: 1000 }} 
-        />
-      )}
 
-      <CheckboxContainer onPress={() => setIsFree(!isFree)}>
-        <Checkbox isChecked={isFree} />
-        <CheckboxLabel>Evento Gratuito</CheckboxLabel>
-      </CheckboxContainer>
+          <TouchableOpacity onPress={() => setShowCountryPicker(true)}>
+            <Input
+              placeholder="País"
+              value={countryName || "Selecione o País"}
+              editable={false}
+              pointerEvents="none"
+            />
+          </TouchableOpacity>
 
-      {!isFree && (
-        <Input
-          placeholder="Valor do Evento (R$)"
-          keyboardType="numeric"
-          value={eventPrice}
-          onChangeText={setEventPrice}
-        />
-      )}
+          <CountryPicker
+            {...{
+              countryCode,
+              onSelect: onSelectCountry,
+              withFilter: true,
+              withFlag: true,
+              withEmoji: false,
+              withCountryNameButton: true,
+              onClose: () => setShowCountryPicker(false),
+              visible: showCountryPicker,
+            }}
+          />
 
-      <SubmitButton onPress={handleSubmit}>
-        <SubmitButtonText>Criar Evento</SubmitButtonText>
-      </SubmitButton>
+          <Input
+            placeholder="Endereço Completo (Rua, Número, Cidade, CEP)"
+            value={addressInput}
+            onChangeText={handleAddressInputChange}
+          />
+          {addressSuggestions.length > 0 && (
+            <FlatList
+              data={addressSuggestions}
+              keyExtractor={(item) => item.place_id}
+              renderItem={({ item }) => (
+                <SuggestionItem onPress={() => handleAddressSelection(item)}>
+                  <SuggestionText>{item.formatted}</SuggestionText>
+                </SuggestionItem>
+              )}
+              style={{ maxHeight: 200, borderWidth: 1, borderColor: '#ccc', zIndex: 1000 }}
+            />
+          )}
+
+          <CheckboxContainer onPress={() => setIsFree(!isFree)}>
+            <Checkbox isChecked={isFree} />
+            <CheckboxLabel>Evento Gratuito</CheckboxLabel>
+          </CheckboxContainer>
+
+          {!isFree && (
+            <Input
+              placeholder="Valor do Evento (R$)"
+              keyboardType="numeric"
+              value={eventPrice}
+              onChangeText={setEventPrice}
+            />
+          )}
+
+          <SubmitButton onPress={handleSubmit} disabled={isSubmitting}>
+            <SubmitButtonText>
+                {isSubmitting ? 'Criando Evento...' : 'Criar Evento'}
+            </SubmitButtonText>
+          </SubmitButton>
+
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Container>
   );
 }

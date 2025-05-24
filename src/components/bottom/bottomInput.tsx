@@ -4,7 +4,6 @@ import styled from 'styled-components/native';
 export const Personbottom = styled(TouchableOpacity).attrs((props) => ({
   onPress: props.onPress || (() => console.log('Clicado!')),
 }))`
-  padding: 12px;
   background-color: ${props => props.bgColor || '#002764'};
   border-radius: 8px;
   align-items: center;

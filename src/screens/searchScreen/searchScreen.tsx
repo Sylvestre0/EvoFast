@@ -1,85 +1,167 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Alert,
   Text,
-  TextInput,
-  Image,
-  ScrollView,
   TouchableOpacity,
+  ScrollView, // <--- Importar ScrollView para rolagem geral da tela
+  View,       // <--- Manter View para containers gerais
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router'; 
-import { styles } from './searchStyle';
+import { router } from 'expo-router';
 
-const mockEvents = [
-  {
-    id: '1',
-    title: 'Festival de Música',
-    date: '2025-05-20',
-    image: require('@/assets/images/ImageFesta.png'),
-  },
-  {
-    id: '2',
-    title: 'Feira de Tecnologia',
-    date: '2025-05-22',
-    image: require('@/assets/images/ImageFesta.png'),
-  },
-];
+import {API} from '@/services/api'; // Ajuste o caminho da sua API
 
-const recommendedEvents = [
-  {
-    id: '3',
-    title: 'Stand Up Comedy',
-    date: '2025-06-01',
-    image: require('@/assets/images/ImageFesta.png'),
-  },
-  {
-    id: '4',
-    title: 'Teatro Experimental',
-    date: '2025-06-05',
-    image: require('@/assets/images/ImageFesta.png'),  },
-];
+// Importe os componentes estilizados, incluindo o novo GridContainer
+import {
+  Container,
+  SearchContainer,
+  SearchIcon,
+  SearchInput,
+  VoiceButton,
+  SectionTitle,
+  EventCard,
+  EventImage,
+  EventTitle,
+  EventDate,
+  LoadingContainer,
+  ErrorContainer,
+  ErrorText,
+  RetryText,
+  NoEventsText,
+  GridContainer, // <--- Importado
+} from './searchStyle'; // Ajuste o caminho do seu arquivo de estilos
 
-export default function EventSearchScreen() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
-        <TextInput
-          placeholder="Buscar eventos..."
-          style={styles.searchInput}
-        />
-        <TouchableOpacity style={styles.voiceButton}>
-          <Ionicons name="mic" size={20} color="#888" />
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.sectionTitle}>📅 Eventos Próximos</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-        {mockEvents.map(event => (
-          <TouchableOpacity key={event.id} onPress={() => router.navigate('/router/compra')}>
-            <View style={styles.eventCard}>
-              <Image source={event.image} style={styles.eventImage} />
-              <Text style={styles.eventTitle}>{event.title}</Text>
-              <Text style={styles.eventDate}>{event.date}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <Text style={styles.sectionTitle}>🎯 Recomendados para Você</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-        {recommendedEvents.map(event => (
-          <TouchableOpacity key={event.id} onPress={() => router.navigate('/router/compra')}>
-            <View style={styles.eventCard}>
-              <Image source={event.image} style={styles.eventImage} />
-              <Text style={styles.eventTitle}>{event.title}</Text>
-              <Text style={styles.eventDate}>{event.date}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  );
+// Defina uma interface para o tipo de evento que você espera da API
+interface Event {
+  id: string;
+  eventName: string;
+  data_evento: string;
+  imagem: string;
+  // Adicione outras propriedades do evento conforme necessário, ex:
+  // latitude?: string;
+  // longitude?: string;
+  // endereco_completo?: string;
 }
 
+export default function EventSearchScreen() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState<boolean>(true);
+  const [errorEvents, setErrorEvents] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+
+  const fetchEvents = async () => {
+    try {
+      setLoadingEvents(true);
+      setErrorEvents(null);
+      const response = await API.get('/ActiveEvents');
+
+      if (response.data && Array.isArray(response.data)) {
+        setEvents(response.data);
+        setFilteredEvents(response.data);
+      } else if (response.data && Array.isArray(response.data.events)) {
+        // Se a API retornar um objeto com uma propriedade 'events' que é um array
+        setEvents(response.data.events);
+        setFilteredEvents(response.data.events);
+      } else {
+        console.warn('API retornou dados em um formato inesperado:', response.data);
+        setEvents([]);
+        setFilteredEvents([]);
+        Alert.alert('Aviso', 'Formato de dados de eventos inesperado da API.');
+      }
+    } catch (err) {
+      console.error('Erro ao buscar eventos:', err);
+      setErrorEvents('Não foi possível carregar os eventos.');
+      Alert.alert('Erro', 'Não foi possível carregar os eventos. Verifique sua conexão.');
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      const lowercasedQuery = searchQuery.toLowerCase();
+      const filtered = events.filter(event =>
+        event.eventName.toLowerCase().includes(lowercasedQuery) ||
+        event.data_evento.toLowerCase().includes(lowercasedQuery)
+      );
+      setFilteredEvents(filtered);
+    } else {
+      setFilteredEvents(events);
+    }
+  }, [searchQuery, events]);
+
+  // Componente de item do card
+  const EventCardItem = ({ event }: { event: Event }) => (
+    // Certifique-se de usar a 'key' aqui ao mapear para cada item
+    <TouchableOpacity key={event.id} onPress={() => router.navigate('/router/compra')}>
+      <EventCard>
+        <EventImage source={{ uri: event.imagem }} />
+        <EventTitle>{event.eventName}</EventTitle>
+        <EventDate>{event.data_evento}</EventDate>
+      </EventCard>
+    </TouchableOpacity>
+  );
+
+  return (
+    <Container>
+      <SearchContainer>
+        <SearchIcon name="search" size={20} color="#888" />
+        <SearchInput
+          placeholder="Buscar eventos..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <VoiceButton>
+          <Ionicons name="mic" size={20} color="#888" />
+        </VoiceButton>
+      </SearchContainer>
+
+      {loadingEvents ? (
+        <LoadingContainer>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Carregando eventos...</Text>
+        </LoadingContainer>
+      ) : errorEvents ? (
+        <ErrorContainer>
+          <ErrorText>{errorEvents}</ErrorText>
+          <TouchableOpacity onPress={fetchEvents}>
+            <RetryText>Tentar novamente</RetryText>
+          </TouchableOpacity>
+        </ErrorContainer>
+      ) : (
+        // Envolver o conteúdo principal em um ScrollView
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <SectionTitle>📅 Eventos Próximos</SectionTitle>
+          {filteredEvents.length > 0 ? (
+            <GridContainer>
+              {/* Usando .map() para renderizar os cards */}
+              {filteredEvents.map(event => (
+                <EventCardItem key={event.id} event={event} />
+              ))}
+            </GridContainer>
+          ) : (
+            <NoEventsText>Nenhum evento encontrado.</NoEventsText>
+          )}
+
+          <SectionTitle style={{ marginTop: 20 }}>🎯 Recomendados para Você</SectionTitle>
+          {filteredEvents.length > 0 ? (
+            <GridContainer>
+              {/* Usando .map() para renderizar os cards recomendados */}
+              {filteredEvents.slice(0, 5).map(event => ( // Limita a 5 itens
+                <EventCardItem key={event.id} event={event} />
+              ))}
+            </GridContainer>
+          ) : (
+            <NoEventsText>Nenhum evento recomendado encontrado.</NoEventsText>
+          )}
+        </ScrollView>
+      )}
+    </Container>
+  );
+}

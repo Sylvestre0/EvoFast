@@ -65,10 +65,6 @@ export default function RegisterScreen() {
       <RegisterButton onPress={() => router.navigate('/router/login')}>
         <RegisterText>Já tem uma conta? Faça login</RegisterText>
       </RegisterButton>
-      
-      <BackButton onPress={() => router.navigate('/router/login')}>
-        <BackText>Voltar</BackText>
-      </BackButton>
 
       <WaterMask>©Sylvester Coop</WaterMask>
     </Container>

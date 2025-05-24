@@ -25,7 +25,7 @@ export const Container = styled(View)`
   height: inherit;
   width: inherit; 
   border-radius: 20px;
-  padding: 16px;
+  padding-bottom: 14px;
   font-size: 16px;
 `
 

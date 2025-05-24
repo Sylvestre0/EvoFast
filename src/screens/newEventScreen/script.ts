@@ -18,7 +18,7 @@ export function useEventForm() {
     const [imageBase64, setImageBase64] = useState<string | null>(null);
     const [imageMimeType, setImageMimeType] = useState<string | null>(null);
     const [imageFileName, setImageFileName] = useState<string | null>(null);
-
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [eventName, setEventName] = useState("");
     const [eventDate, setEventDate] = useState("");
     const [selectedDateObject, setSelectedDateObject] = useState(new Date());
@@ -188,10 +188,14 @@ const openImageLibrary = async () => {
 
     // --- Funções de Submissão ---
     const handleSubmit = async () => {
-        if (!eventName || !eventDate || !countryName || !selectedAddressFull) {
+        if (!eventName || !eventDate || !countryName || !selectedAddressFull || !imageUri) {
             Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios e selecione um endereço válido.");
             return;
         }
+        if (isSubmitting) {
+            return;
+        }
+        setIsSubmitting(true);
 
         let formattedDateForBackend = eventDate;
         if (eventDate.includes('/')) {
@@ -205,9 +209,9 @@ const openImageLibrary = async () => {
         formData.append('eventName', eventName);
         formData.append('data', formattedDateForBackend);
         formData.append('pais', countryName);
-
-        formData.append('enderecoCompleto', selectedAddressFull); 
-
+        formData.append('code',countryCode.toLowerCase())
+        formData.append('enderecoCompleto', selectedAddressFull);  
+ 
         formData.append('preco', isFree ? '0' : eventPrice);
 
         if (imageUri && imageMimeType && imageFileName) {
@@ -254,13 +258,14 @@ const openImageLibrary = async () => {
         // Estados
         imageUri, eventName, eventDate, showDatePicker, selectedDateObject,
         countryCode, countryName, showCountryPicker, addressInput,
-        addressSuggestions, isFree, eventPrice,
+        addressSuggestions, isFree, eventPrice,isSubmitting,
         // Funções de atualização de estado
         setImageUri, setEventName, setEventDate, setShowDatePicker, setSelectedDateObject,
         setCountryCode, setCountryName, setShowCountryPicker, setAddressInput,
         setAddressSuggestions, setIsFree, setEventPrice,
         // Funções de manipuladores
         showImageOptions, handleDateChange, onSelectCountry,
-        handleAddressInputChange, handleAddressSelection, handleSubmit
+        handleAddressInputChange, handleAddressSelection, handleSubmit,
+        setIsSubmitting
     };
 }
