@@ -1,33 +1,52 @@
+// src/controllers/EventsController.ts
+
 import { Request, Response } from 'express';
 import { EventLocations } from '../services/AuthLocations';
 
 const eventLocations = new EventLocations();
 
-export const PublishEvents = async (req: Request, res: Response) => {
-  const imageFile = req.file
-  const { eventName,data,pais,preco,enderecoCompleto } = req.body;
+export const PublishEvents = async (req: Request, res: Response): Promise<void> => {
+  const imageFile = req.file;
 
-  const imagemtype = imageFile!.mimetype;
-  
-  console.log(eventName,data,pais,preco,enderecoCompleto)
+  if (!imageFile) {
+    res.status(400).json({ error: 'Nenhuma imagem foi enviada para o evento.' });
+    return;
+  }
 
-  const imagem: Buffer = imageFile!.buffer;
+  const { eventName, data, pais, preco, enderecoCompleto,code } = req.body;
+
+  const imagemtype = imageFile.mimetype;
+  const imagem: Buffer = imageFile.buffer;
+
+  console.log(eventName, data, pais, preco, enderecoCompleto,code);
+
   try {
-    const Location = await eventLocations.PublishEvents(eventName,data,pais,preco,enderecoCompleto,imagem,imagemtype);
+    const eventDate = new Date(data); 
+    const eventPrice = parseFloat(preco); 
+
+    const Location = await eventLocations.PublishEvents(
+      eventName,
+      eventDate,
+      pais,
+      eventPrice,
+      enderecoCompleto,
+      imagem,
+      imagemtype,
+      code
+    );
     res.status(201).json(Location);
-  } catch (err: any) {  
+  } catch (err: any) {
+    console.error('Error in PublishEvents (Controller):', err.message); // Log the actual error
     if (err.message === 'CEP inválido.' || err.message === 'Nenhuma imagem foi enviada para o evento.') {
-      // Status 400 para erros de validação
       res.status(400).json({ error: err.message });
     } else if (err.message === 'Endereço não encontrado pela API de geocodificação.') {
-      // Status 400 para erros de validação
       res.status(404).json({ error: err.message });
-    }else {
-      // Status 500 para erros inesperados
-      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: 'Falha ao publicar evento: ' + err.message }); // More descriptive message
     }
   }
 };
+
 export const ActiveEvents = async (req: Request, res: Response) => {
   try {
     const events = await eventLocations.ActiveEvents();

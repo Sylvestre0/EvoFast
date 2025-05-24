@@ -1,7 +1,6 @@
 // src/services/AuthLocations.ts
 
 import { Pool } from 'pg';
-import { isValidCEP } from '../helpers/CEPHelper';
 import { searchAddressGeoapify } from '../config/geoAPI';
 import { EventRepository } from '../repositories/EventRepository';
 
@@ -13,7 +12,7 @@ export class EventLocations {
       this.eventRepository = new EventRepository;
   }
 
-  async PublishEvents(eventName:string,data:Date,pais:string,preco:number,enderecoCompleto:string,imagem:Buffer,imagetype:string): Promise<any> {
+  async PublishEvents(eventName:string,data:Date,pais:string,preco:number,enderecoCompleto:string,imagem:Buffer,imagetype:string,code:string): Promise<any> {
 
       if (!imagem) {
           throw new Error('Nenhuma imagem foi enviada para o evento.');
@@ -23,7 +22,7 @@ export class EventLocations {
       let longitude: number;
 
       try {
-          const geoapifyResult = await searchAddressGeoapify(enderecoCompleto);
+          const geoapifyResult = await searchAddressGeoapify(enderecoCompleto,code);
 
           if (geoapifyResult) {
               latitude = geoapifyResult.lat;

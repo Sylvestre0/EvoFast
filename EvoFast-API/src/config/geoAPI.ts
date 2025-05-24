@@ -2,9 +2,9 @@ import axios from 'axios';
 
 import { GeoapifyFeatureProperties } from '../models/geoApiModel'; 
 
-export const searchAddressGeoapify = async (enderecoCompleto: string): Promise<GeoapifyFeatureProperties | null> => {
+export const searchAddressGeoapify = async (enderecoCompleto: string,code:string): Promise<GeoapifyFeatureProperties | null> => {
     const lang = 'pt'; 
-    const filter = 'countrycode:br'; 
+    const filter = `countrycode:${code}`; 
     const encodedQuery = encodeURIComponent(enderecoCompleto);
     
     const apiKey = "c535190236564667ac40594a31345c0d";
